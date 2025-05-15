@@ -58,7 +58,7 @@ final class PlayerViewController: UIViewController {
         
         view.addSubview(mainStack)
         
-        NSLayoutConstraint.active([
+        NSLayoutConstraint.activate([
             mainStack.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             mainStack.centerYAnchor.constraint(equalTo: view.centerYAnchor),
             coverImageView.heightAnchor.constraint(equalToConstant: 200),

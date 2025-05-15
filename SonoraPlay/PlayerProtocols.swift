@@ -20,7 +20,7 @@ protocol PlayerViewToPresenterProtocol: AnyObject {
 
 // MARK: - Presenter to View
 
-Protocol PlayerPresenterToViewProtocol: AnyObject {
+protocol PlayerPresenterToViewProtocol: AnyObject {
     func showTrack(title: String, artist: String, coverImageName: String)
     func updatePlayButton(isPlaying: Bool)
 }
