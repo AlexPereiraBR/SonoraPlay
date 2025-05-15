@@ -38,8 +38,8 @@ final class PlayerPresenter: PlayerViewToPresenterProtocol {
 
 extension PlayerPresenter: PlayerInteractorToPresenterProtocol {
     
-    func didLoad(track: Track) {
-        view?.showTrack(title: track.title, artist: track.artist, coverImageName: track.coverImageName)
+    func didLoad(track: LocalTrack) {
+        view?.showTrack(title: track.title, artist: track.artist, artwork: track.artwork)
     }
     
     func didChangePlaybackState(isPlaying: Bool) {

@@ -29,6 +29,11 @@
 			path = SonoraPlay;
 			sourceTree = "<group>";
 		};
+		D7F7F3702DD6980B005E2243 /* Music1 */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = Music1;
+			sourceTree = "<group>";
+		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -45,6 +50,7 @@
 		D7E94BEB2DD643AF009447B5 = {
 			isa = PBXGroup;
 			children = (
+				D7F7F3702DD6980B005E2243 /* Music1 */,
 				D7E94BF62DD643AF009447B5 /* SonoraPlay */,
 				D7E94BF52DD643AF009447B5 /* Products */,
 			);
@@ -75,6 +81,7 @@
 			);
 			fileSystemSynchronizedGroups = (
 				D7E94BF62DD643AF009447B5 /* SonoraPlay */,
+				D7F7F3702DD6980B005E2243 /* Music1 */,
 			);
 			name = SonoraPlay;
 			packageProductDependencies = (

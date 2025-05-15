@@ -21,7 +21,7 @@ protocol PlayerViewToPresenterProtocol: AnyObject {
 // MARK: - Presenter to View
 
 protocol PlayerPresenterToViewProtocol: AnyObject {
-    func showTrack(title: String, artist: String, coverImageName: String)
+    func showTrack(title: String, artist: String, artwork: UIImage?)
     func updatePlayButton(isPlaying: Bool)
 }
 
@@ -38,7 +38,7 @@ protocol PlayerPresenterToInteractorProtocol: AnyObject {
 // MARK: - Interactor to Presenter
 
 protocol PlayerInteractorToPresenterProtocol: AnyObject {
-    func didLoad(track: Track)
+    func didLoad(track: LocalTrack)
     func didChangePlaybackState(isPlaying: Bool)
 }
 

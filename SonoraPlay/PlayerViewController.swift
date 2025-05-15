@@ -85,11 +85,13 @@ final class PlayerViewController: UIViewController {
 
 extension PlayerViewController: PlayerPresenterToViewProtocol {
     
-    func showTrack(title: String, artist: String, coverImageName: String) {
+    func showTrack(title: String, artist: String, artwork: UIImage?) {
         titleLabel.text = title
         artistLabel.text = artist
-        coverImageView.image = UIImage(named: coverImageName)
+        coverImageView.image = artwork ?? UIImage(named: "defaultCover") // подстраховка
     }
+    
+   
     
     func updatePlayButton(isPlaying: Bool) {
         self.isPlaying = isPlaying
