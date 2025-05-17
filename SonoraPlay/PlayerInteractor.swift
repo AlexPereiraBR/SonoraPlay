@@ -14,7 +14,7 @@ final class PlayerInteractor: NSObject, PlayerPresenterToInteractorProtocol  {
     weak var presenter: PlayerInteractorToPresenterProtocol?
     private var player: AVAudioPlayer?
     private var currentTrackIndex = 0
-    
+    private var currentVolume: Float = 0.5
     private var tracks: [LocalTrack] = []
     private var isPlayerPrepared = false
     
@@ -53,6 +53,7 @@ final class PlayerInteractor: NSObject, PlayerPresenterToInteractorProtocol  {
     }
     
     func setVolume(_ volume: Float) {
+        currentVolume = volume
         player?.volume = volume
     }
     
@@ -78,10 +79,10 @@ final class PlayerInteractor: NSObject, PlayerPresenterToInteractorProtocol  {
     }
     
     private func preparePlayer(for track: LocalTrack) {
-        
         player = try? AVAudioPlayer(contentsOf: track.fileURL)
         player?.prepareToPlay()
         player?.delegate = self
+        player?.volume = currentVolume
     }
     
     private func replayCurrent() {
