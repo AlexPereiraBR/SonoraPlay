@@ -55,7 +55,7 @@ protocol PlayerInteractorToPresenterProtocol: AnyObject {
     func didChangePlaybackMode(mode: PlaybackMode)
 }
 
-// MARK: Presenter to Router
+// MARK: - Presenter to Router
 
 protocol PlayerPresenterToRouterProtocol: AnyObject {
     static func createModule() -> UIViewController

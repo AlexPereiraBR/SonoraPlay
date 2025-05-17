@@ -9,6 +9,8 @@ import UIKit
 
 final class PlayerRouter: PlayerPresenterToRouterProtocol {
     
+    // MARK: - Assembly
+    
     static func createModule() -> UIViewController {
         let view = PlayerViewController()
         let presenter = PlayerPresenter()

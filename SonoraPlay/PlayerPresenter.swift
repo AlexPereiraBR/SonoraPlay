@@ -9,9 +9,13 @@ import Foundation
 
 final class PlayerPresenter: PlayerViewToPresenterProtocol {
     
+    // MARK: - Properties
+    
     weak var view: PlayerPresenterToViewProtocol?
     var interactor: PlayerPresenterToInteractorProtocol?
     var router: PlayerPresenterToRouterProtocol?
+    
+    // MARK: - View to Presenter
     
     func viewDidLoad() {
         interactor?.loadInitialTrack()
@@ -52,7 +56,7 @@ final class PlayerPresenter: PlayerViewToPresenterProtocol {
     }
 }
 
-// MARK: - Interactor Output
+// MARK: - Interactor to Presenter
 
 extension PlayerPresenter: PlayerInteractorToPresenterProtocol {
     

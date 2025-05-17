@@ -20,6 +20,8 @@ final class PlayerInteractor: NSObject, PlayerPresenterToInteractorProtocol  {
     
     private var playbackMode: PlaybackMode = .normal
     
+    // MARK: - Playback Control
+    
     func loadInitialTrack() {
         copySampleTracksIfNeeded()
         tracks = loadTracksFromDocuments()
@@ -32,6 +34,8 @@ final class PlayerInteractor: NSObject, PlayerPresenterToInteractorProtocol  {
         presenter?.didLoad(track: track)
         preparePlayer(for: track)
     }
+    
+    // MARK: - Track Management
     
     func play() {
         if !isPlayerPrepared {
@@ -52,6 +56,8 @@ final class PlayerInteractor: NSObject, PlayerPresenterToInteractorProtocol  {
         player?.volume = volume
     }
     
+    // MARK: - Playback Mode Logic
+    
     func cyclePlaybackMode() {
         let allModes = PlaybackMode.allCases
         if let index = allModes.firstIndex(of: playbackMode) {
@@ -62,22 +68,13 @@ final class PlayerInteractor: NSObject, PlayerPresenterToInteractorProtocol  {
     }
 
     func next() {
-        currentTrackIndex = (currentTrackIndex + 1) % tracks.count
-        let track = tracks[currentTrackIndex]
-        presenter?.didLoad(track: track)
-        preparePlayer(for: track)
-        player?.play()
-        presenter?.didChangePlaybackState(isPlaying: true)
+        let nextIndex = (currentTrackIndex + 1) % tracks.count
+        playTrack(at: nextIndex)
     }
     
     func previous() {
-        currentTrackIndex = (currentTrackIndex - 1 + tracks.count) % tracks.count
-        let track = tracks[currentTrackIndex]
-        presenter?.didLoad(track: track)
-        preparePlayer(for: track)
-        isPlayerPrepared = true
-        player?.play()
-        presenter?.didChangePlaybackState(isPlaying: true)
+        let previousIndex = (currentTrackIndex - 1 + tracks.count) % tracks.count
+        playTrack(at: previousIndex)
     }
     
     private func preparePlayer(for track: LocalTrack) {
@@ -91,6 +88,17 @@ final class PlayerInteractor: NSObject, PlayerPresenterToInteractorProtocol  {
         player?.currentTime = 0
         player?.play()
     }
+    
+    private func playTrack(at index: Int) {
+        currentTrackIndex = index
+        let track = tracks[currentTrackIndex]
+        presenter?.didLoad(track: track)
+        preparePlayer(for: track)
+        player?.play()
+        presenter?.didChangePlaybackState(isPlaying: true)
+    }
+    
+    // MARK: - Metadata Extraction
     
     func loadTracksFromDocuments() -> [LocalTrack] {
         let fileManager = FileManager.default
@@ -185,28 +193,19 @@ final class PlayerInteractor: NSObject, PlayerPresenterToInteractorProtocol  {
         case .repeatOne:
             replayCurrent()
         case .repeatAll:
-            if currentTrackIndex == tracks.count - 1 {
-                currentTrackIndex = 0
-            } else {
-                currentTrackIndex += 1
-            }
-            let track = tracks[currentTrackIndex]
-            presenter?.didLoad(track: track)
-            preparePlayer(for: track)
-            player?.play()
+            let nextIndex = (currentTrackIndex + 1) % tracks.count
+            playTrack(at: nextIndex)
         case .shuffle:
-            currentTrackIndex = Int.random(in: 0..<tracks.count)
-            let track = tracks[currentTrackIndex]
-            presenter?.didLoad(track: track)
-            preparePlayer(for: track)
-            player?.play()
+            let randomIndex = Int.random(in: 0..<tracks.count)
+            playTrack(at: randomIndex)
         }
     }
 }
+
+// MARK: - AVAudioPlayerDelegate
 
 extension PlayerInteractor: AVAudioPlayerDelegate {
     func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool) {
         handlePlaybackMode()
     }
 }
-

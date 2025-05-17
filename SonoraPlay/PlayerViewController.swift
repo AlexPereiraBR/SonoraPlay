@@ -7,8 +7,12 @@
 
 import Foundation
 import UIKit
+import SnapKit
 
 final class PlayerViewController: UIViewController {
+    
+    // MARK: - UI Elements
+    
     var presenter: PlayerViewToPresenterProtocol?
     
     private let titleLabel = UILabel()
@@ -17,131 +21,130 @@ final class PlayerViewController: UIViewController {
     private let playPauseButton = UIButton(type: .system)
     private let nextButton = UIButton(type: .system)
     private let previousButton = UIButton(type: .system)
-    
     private let progressSlider = UISlider()
     private let currentTimeLabel = UILabel()
     private let durationLabel = UILabel()
     private var isSeeking = false
     private var progressTimer: Timer?
-    
     private var isPlaying = false
-    
     private let volumeSlider = UISlider()
-    
     private let playbackModeButton = UIButton(type: .system)
+    
+    // MARK: - Lifecycle
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        setupUI()
+        view.backgroundColor = .systemBackground
+        configureLabels()
+        configureButtons()
+        configureProgressSlider()
+        configureVolumeSlider()
+        configurePlaybackModeButton()
+        setupLayout()
         presenter?.viewDidLoad()
         startProgressTimer()
     }
     
-    private func setupUI() {
-        view.backgroundColor = .systemBackground
-        
-        coverImageView.contentMode = .scaleAspectFit
+    // MARK: - UI Configuration
+    
+    private func configureLabels() {
         titleLabel.font = .boldSystemFont(ofSize: 20)
         titleLabel.textAlignment = .center
         artistLabel.font = .systemFont(ofSize: 16)
         artistLabel.textAlignment = .center
-        
+        currentTimeLabel.font = .monospacedDigitSystemFont(ofSize: 20, weight: .regular)
+        durationLabel.font = .monospacedDigitSystemFont(ofSize: 20, weight: .regular)
+        currentTimeLabel.text = "00:00"
+        durationLabel.text = "00:00"
+    }
+    
+    private func configureButtons() {
         playPauseButton.setTitle("Play", for: .normal)
         playPauseButton.addTarget(self, action: #selector(playPauseTapped), for: .touchUpInside)
-        
         nextButton.setTitle("Next", for: .normal)
         nextButton.addTarget(self, action: #selector(nextTapped), for: .touchUpInside)
-        
         previousButton.setTitle("Prev", for: .normal)
         previousButton.addTarget(self, action: #selector(previousTapped), for: .touchUpInside)
-        
-        let stack = UIStackView(arrangedSubviews: [previousButton, playPauseButton, nextButton])
-        stack.axis = .horizontal
-        stack.spacing = 20
-        stack.alignment = .center
-        stack.distribution = .equalSpacing
-        
-        let mainStack = UIStackView(arrangedSubviews: [coverImageView, titleLabel, artistLabel, stack])
-        mainStack.axis = .vertical
-        mainStack.spacing = 20
-        mainStack.alignment = .center
-        mainStack.translatesAutoresizingMaskIntoConstraints = false
-        
-        view.addSubview(mainStack)
-        
-        NSLayoutConstraint.activate([
-            mainStack.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            mainStack.centerYAnchor.constraint(equalTo: view.centerYAnchor),
-            coverImageView.heightAnchor.constraint(equalToConstant: 200),
-            coverImageView.widthAnchor.constraint(equalToConstant: 200)
-        ])
-        
-        view.addSubview(progressSlider)
-        view.addSubview(currentTimeLabel)
-        view.addSubview(durationLabel)
-        
+    }
+    
+    private func configureProgressSlider() {
         progressSlider.minimumTrackTintColor = .label
         progressSlider.maximumTrackTintColor = .systemGray4
         progressSlider.thumbTintColor = .label
-        
         progressSlider.addTarget(self, action: #selector(sliderTouchBegan(_:)), for: .touchDown)
         progressSlider.addTarget(self, action: #selector(sliderTouchEnded(_:)), for: [.touchUpInside, .touchUpOutside])
         progressSlider.addTarget(self, action: #selector(sliderValueChanged(_:)), for: .valueChanged)
-        
-        currentTimeLabel.font = .monospacedDigitSystemFont(ofSize: 20, weight: .regular)
-        durationLabel.font = .monospacedDigitSystemFont(ofSize: 20, weight: .regular)
-        
-        currentTimeLabel.text = "00:00"
-        durationLabel.text = "00:00"
-        
-        currentTimeLabel.translatesAutoresizingMaskIntoConstraints = false
-        durationLabel.translatesAutoresizingMaskIntoConstraints = false
-        progressSlider.translatesAutoresizingMaskIntoConstraints = false
-        
-        NSLayoutConstraint.activate([
-            progressSlider.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 24),
-            progressSlider.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -24),
-            progressSlider.topAnchor.constraint(equalTo: mainStack.bottomAnchor, constant: 32),
-            
-            currentTimeLabel.topAnchor.constraint(equalTo: progressSlider.bottomAnchor, constant: 4),
-            currentTimeLabel.leadingAnchor.constraint(equalTo: progressSlider.leadingAnchor),
-            
-            durationLabel.topAnchor.constraint(equalTo: progressSlider.bottomAnchor, constant: 4),
-            durationLabel.trailingAnchor.constraint(equalTo: progressSlider.trailingAnchor)
-        ])
-        
-        //Volume slider
+    }
+    
+    private func configureVolumeSlider() {
         volumeSlider.minimumValue = 0.0
         volumeSlider.maximumValue = 1.0
-        volumeSlider.value = 0.5 // или player?.volume, если есть
+        volumeSlider.value = 0.5
         volumeSlider.addTarget(self, action: #selector(volumeChanged(_:)), for: .valueChanged)
-        
-        view.addSubview(volumeSlider)
-        volumeSlider.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            volumeSlider.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 24),
-            volumeSlider.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -24),
-            volumeSlider.topAnchor.constraint(equalTo: durationLabel.bottomAnchor, constant: 24)
-            ])
-        
-        
+    }
+    
+    private func configurePlaybackModeButton() {
         playbackModeButton.titleLabel?.font = UIFont.systemFont(ofSize: 38)
         playbackModeButton.setTitle("🔁", for: .normal)
         playbackModeButton.addTarget(self, action: #selector(didTapPlaybackMode), for: .touchUpInside)
-        view.addSubview(playbackModeButton)
-        
-        playbackModeButton.translatesAutoresizingMaskIntoConstraints = false
-
-        NSLayoutConstraint.activate([
-            playbackModeButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            playbackModeButton.topAnchor.constraint(equalTo: volumeSlider.bottomAnchor, constant: 24),
-            playbackModeButton.heightAnchor.constraint(equalToConstant: 62),
-            playbackModeButton.widthAnchor.constraint(equalToConstant: 62)
-        ])
-        
-
-        // Установи констрейнты где нужно
     }
+    
+    // MARK: - Layout
+    
+    private func setupLayout() {
+        let controlsStack = UIStackView(arrangedSubviews: [previousButton, playPauseButton, nextButton])
+        controlsStack.axis = .horizontal
+        controlsStack.spacing = 20
+        controlsStack.alignment = .center
+        controlsStack.distribution = .equalSpacing
+
+        let mainStack = UIStackView(arrangedSubviews: [coverImageView, titleLabel, artistLabel, controlsStack])
+        mainStack.axis = .vertical
+        mainStack.spacing = 20
+        mainStack.alignment = .center
+
+        view.addSubview(mainStack)
+        view.addSubview(progressSlider)
+        view.addSubview(currentTimeLabel)
+        view.addSubview(durationLabel)
+        view.addSubview(volumeSlider)
+        view.addSubview(playbackModeButton)
+
+        mainStack.snp.makeConstraints { make in
+            make.centerX.centerY.equalToSuperview()
+        }
+        coverImageView.snp.makeConstraints { make in
+            make.size.equalTo(200)
+        }
+
+        progressSlider.snp.makeConstraints { make in
+            make.leading.trailing.equalToSuperview().inset(24)
+            make.top.equalTo(mainStack.snp.bottom).offset(32)
+        }
+
+        currentTimeLabel.snp.makeConstraints { make in
+            make.top.equalTo(progressSlider.snp.bottom).offset(4)
+            make.leading.equalTo(progressSlider.snp.leading)
+        }
+
+        durationLabel.snp.makeConstraints { make in
+            make.top.equalTo(progressSlider.snp.bottom).offset(4)
+            make.trailing.equalTo(progressSlider.snp.trailing)
+        }
+
+        volumeSlider.snp.makeConstraints { make in
+            make.leading.trailing.equalToSuperview().inset(24)
+            make.top.equalTo(durationLabel.snp.bottom).offset(24)
+        }
+
+        playbackModeButton.snp.makeConstraints { make in
+            make.centerX.equalToSuperview()
+            make.top.equalTo(volumeSlider.snp.bottom).offset(24)
+            make.size.equalTo(62)
+        }
+    }
+    
+    // MARK: - Actions
     
     @objc private func didTapPlaybackMode() {
         presenter?.didTapCyclePlaybackMode()
@@ -177,6 +180,8 @@ final class PlayerViewController: UIViewController {
     @objc private func volumeChanged(_ sender: UISlider) {
         presenter?.setVolume(sender.value)
     }
+    
+    // MARK: - Helpers
     
     private func startProgressTimer() {
         progressTimer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { [weak self] _ in
@@ -235,4 +240,3 @@ extension PlayerViewController: PlayerPresenterToViewProtocol {
         }
     }
     
-
