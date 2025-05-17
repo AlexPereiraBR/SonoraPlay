@@ -16,6 +16,8 @@ protocol PlayerViewToPresenterProtocol: AnyObject {
     func didTapPause()
     func didTapNext()
     func didTapPrevious()
+    func seekTo(position: TimeInterval)
+    func getPlaybackProgress() -> (currentTime: TimeInterval, duration: TimeInterval)
 }
 
 // MARK: - Presenter to View
@@ -33,6 +35,9 @@ protocol PlayerPresenterToInteractorProtocol: AnyObject {
     func pause()
     func next()
     func previous()
+    func seek(to time: TimeInterval)
+    func getCurrentTime() -> TimeInterval
+    func getDuration() -> TimeInterval
 }
 
 // MARK: - Interactor to Presenter

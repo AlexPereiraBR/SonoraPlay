@@ -6,6 +6,11 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		D7F7F4372DD7C9E8005E2243 /* SnapKit in Frameworks */ = {isa = PBXBuildFile; productRef = D7F7F4362DD7C9E8005E2243 /* SnapKit */; };
+		D7F7F43A2DD7CC15005E2243 /* MarqueeLabel in Frameworks */ = {isa = PBXBuildFile; productRef = D7F7F4392DD7CC15005E2243 /* MarqueeLabel */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		D7E94BF42DD643AF009447B5 /* SonoraPlay.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SonoraPlay.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -41,6 +46,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D7F7F43A2DD7CC15005E2243 /* MarqueeLabel in Frameworks */,
+				D7F7F4372DD7C9E8005E2243 /* SnapKit in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -85,6 +92,8 @@
 			);
 			name = SonoraPlay;
 			packageProductDependencies = (
+				D7F7F4362DD7C9E8005E2243 /* SnapKit */,
+				D7F7F4392DD7CC15005E2243 /* MarqueeLabel */,
 			);
 			productName = SonoraPlay;
 			productReference = D7E94BF42DD643AF009447B5 /* SonoraPlay.app */;
@@ -114,6 +123,10 @@
 			);
 			mainGroup = D7E94BEB2DD643AF009447B5;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				D7F7F4352DD7C9E8005E2243 /* XCRemoteSwiftPackageReference "SnapKit" */,
+				D7F7F4382DD7CC15005E2243 /* XCRemoteSwiftPackageReference "MarqueeLabel" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = D7E94BF52DD643AF009447B5 /* Products */;
 			projectDirPath = "";
@@ -344,6 +357,38 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		D7F7F4352DD7C9E8005E2243 /* XCRemoteSwiftPackageReference "SnapKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/SnapKit/SnapKit.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.7.1;
+			};
+		};
+		D7F7F4382DD7CC15005E2243 /* XCRemoteSwiftPackageReference "MarqueeLabel" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/cbpowell/MarqueeLabel.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 4.5.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		D7F7F4362DD7C9E8005E2243 /* SnapKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = D7F7F4352DD7C9E8005E2243 /* XCRemoteSwiftPackageReference "SnapKit" */;
+			productName = SnapKit;
+		};
+		D7F7F4392DD7CC15005E2243 /* MarqueeLabel */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = D7F7F4382DD7CC15005E2243 /* XCRemoteSwiftPackageReference "MarqueeLabel" */;
+			productName = MarqueeLabel;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = D7E94BEC2DD643AF009447B5 /* Project object */;
 }

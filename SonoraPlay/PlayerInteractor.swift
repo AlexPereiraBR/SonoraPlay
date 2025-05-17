@@ -16,6 +16,7 @@ final class PlayerInteractor: PlayerPresenterToInteractorProtocol  {
     private var currentTrackIndex = 0
     
     private var tracks: [LocalTrack] = []
+    private var isPlayerPrepared = false
     
     func loadInitialTrack() {
         copySampleTracksIfNeeded()
@@ -31,7 +32,12 @@ final class PlayerInteractor: PlayerPresenterToInteractorProtocol  {
     }
     
     func play() {
-        player?.pause()
+        if !isPlayerPrepared {
+            let track = tracks[currentTrackIndex]
+            preparePlayer(for: track)
+            isPlayerPrepared = true
+        }
+        player?.play()
         presenter?.didChangePlaybackState(isPlaying: true)
     }
     
@@ -54,6 +60,7 @@ final class PlayerInteractor: PlayerPresenterToInteractorProtocol  {
         let track = tracks[currentTrackIndex]
         presenter?.didLoad(track: track)
         preparePlayer(for: track)
+        isPlayerPrepared = true
         player?.play()
         presenter?.didChangePlaybackState(isPlaying: true)
     }
@@ -136,5 +143,16 @@ final class PlayerInteractor: PlayerPresenterToInteractorProtocol  {
         
     }
     
-    
+    // MARK: - PlayerPresenterToInteractorProtocol methods for seeking and time retrieval
+    func seek(to time: TimeInterval) {
+        player?.currentTime = time
+    }
+
+    func getCurrentTime() -> TimeInterval {
+        return player?.currentTime ?? 0
+    }
+
+    func getDuration() -> TimeInterval {
+        return player?.duration ?? 1 // Avoid division by zero
+    }
 }

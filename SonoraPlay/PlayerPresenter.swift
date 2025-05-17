@@ -32,6 +32,16 @@ final class PlayerPresenter: PlayerViewToPresenterProtocol {
     func didTapPrevious() {
         interactor?.previous()
     }
+
+    func seekTo(position: TimeInterval) {
+        interactor?.seek(to: position)
+    }
+
+    func getPlaybackProgress() -> (currentTime: TimeInterval, duration: TimeInterval) {
+        let current = interactor?.getCurrentTime() ?? 0
+        let duration = interactor?.getDuration() ?? 1
+        return (current, duration)
+    }
 }
 
 // MARK: - Interactor Output
