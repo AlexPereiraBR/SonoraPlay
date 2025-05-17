@@ -26,6 +26,10 @@ final class PlayerViewController: UIViewController {
     
     private var isPlaying = false
     
+    private let volumeSlider = UISlider()
+    
+    private let playbackModeButton = UIButton(type: .system)
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
@@ -106,6 +110,41 @@ final class PlayerViewController: UIViewController {
             durationLabel.trailingAnchor.constraint(equalTo: progressSlider.trailingAnchor)
         ])
         
+        //Volume slider
+        volumeSlider.minimumValue = 0.0
+        volumeSlider.maximumValue = 1.0
+        volumeSlider.value = 0.5 // или player?.volume, если есть
+        volumeSlider.addTarget(self, action: #selector(volumeChanged(_:)), for: .valueChanged)
+        
+        view.addSubview(volumeSlider)
+        volumeSlider.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            volumeSlider.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 24),
+            volumeSlider.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -24),
+            volumeSlider.topAnchor.constraint(equalTo: durationLabel.bottomAnchor, constant: 24)
+            ])
+        
+        
+        playbackModeButton.titleLabel?.font = UIFont.systemFont(ofSize: 38)
+        playbackModeButton.setTitle("🔁", for: .normal)
+        playbackModeButton.addTarget(self, action: #selector(didTapPlaybackMode), for: .touchUpInside)
+        view.addSubview(playbackModeButton)
+        
+        playbackModeButton.translatesAutoresizingMaskIntoConstraints = false
+
+        NSLayoutConstraint.activate([
+            playbackModeButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            playbackModeButton.topAnchor.constraint(equalTo: volumeSlider.bottomAnchor, constant: 24),
+            playbackModeButton.heightAnchor.constraint(equalToConstant: 62),
+            playbackModeButton.widthAnchor.constraint(equalToConstant: 62)
+        ])
+        
+
+        // Установи констрейнты где нужно
+    }
+    
+    @objc private func didTapPlaybackMode() {
+        presenter?.didTapCyclePlaybackMode()
     }
     
     @objc private func playPauseTapped() {
@@ -135,6 +174,10 @@ final class PlayerViewController: UIViewController {
         currentTimeLabel.text = formatTime(TimeInterval(sender.value))
     }
     
+    @objc private func volumeChanged(_ sender: UISlider) {
+        presenter?.setVolume(sender.value)
+    }
+    
     private func startProgressTimer() {
         progressTimer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { [weak self] _ in
             self?.updateProgress()
@@ -157,22 +200,39 @@ final class PlayerViewController: UIViewController {
         return String(format: "%02d:%02d", minutes, seconds)
     }
     
+    
+    
+    
 }
 
 // MARK: - Presenter to View
 
 extension PlayerViewController: PlayerPresenterToViewProtocol {
     
-    func showTrack(title: String, artist: String, artwork: UIImage?) {
-        titleLabel.text = title
-        artistLabel.text = artist
-        coverImageView.image = artwork ?? UIImage(named: "defaultCover") // подстраховка
+    func updatePlaybackModeIcon(to mode: PlaybackMode) {
+        switch mode {
+        case .normal:
+            playbackModeButton.setTitle("▶︎", for: .normal)
+        case .repeatOne:
+            playbackModeButton.setTitle("🔂", for: .normal)
+        case .repeatAll:
+            playbackModeButton.setTitle("🔁", for: .normal)
+        case .shuffle:
+            playbackModeButton.setTitle("🔀", for: .normal)
+        }
+    }
+        
+        
+        func showTrack(title: String, artist: String, artwork: UIImage?) {
+            titleLabel.text = title
+            artistLabel.text = artist
+            coverImageView.image = artwork ?? UIImage(named: "defaultCover") // подстраховка
+        }
+        
+        func updatePlayButton(isPlaying: Bool) {
+            self.isPlaying = isPlaying
+            playPauseButton.setTitle(isPlaying ? "Pause" : "Play", for: .normal)
+        }
     }
     
-   
-    
-    func updatePlayButton(isPlaying: Bool) {
-        self.isPlaying = isPlaying
-        playPauseButton.setTitle(isPlaying ? "Pause" : "Play", for: .normal)
-    }
-}
+

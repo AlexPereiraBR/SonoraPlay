@@ -9,7 +9,7 @@ import Foundation
 import AVFoundation
 import UIKit
 
-final class PlayerInteractor: PlayerPresenterToInteractorProtocol  {
+final class PlayerInteractor: NSObject, PlayerPresenterToInteractorProtocol  {
     
     weak var presenter: PlayerInteractorToPresenterProtocol?
     private var player: AVAudioPlayer?
@@ -17,6 +17,8 @@ final class PlayerInteractor: PlayerPresenterToInteractorProtocol  {
     
     private var tracks: [LocalTrack] = []
     private var isPlayerPrepared = false
+    
+    private var playbackMode: PlaybackMode = .normal
     
     func loadInitialTrack() {
         copySampleTracksIfNeeded()
@@ -46,6 +48,19 @@ final class PlayerInteractor: PlayerPresenterToInteractorProtocol  {
         presenter?.didChangePlaybackState(isPlaying: false)
     }
     
+    func setVolume(_ volume: Float) {
+        player?.volume = volume
+    }
+    
+    func cyclePlaybackMode() {
+        let allModes = PlaybackMode.allCases
+        if let index = allModes.firstIndex(of: playbackMode) {
+            let nextIndex = (index + 1) % allModes.count
+            playbackMode = allModes[nextIndex]
+            presenter?.didChangePlaybackMode(mode: playbackMode)
+        }
+    }
+
     func next() {
         currentTrackIndex = (currentTrackIndex + 1) % tracks.count
         let track = tracks[currentTrackIndex]
@@ -69,6 +84,12 @@ final class PlayerInteractor: PlayerPresenterToInteractorProtocol  {
         
         player = try? AVAudioPlayer(contentsOf: track.fileURL)
         player?.prepareToPlay()
+        player?.delegate = self
+    }
+    
+    private func replayCurrent() {
+        player?.currentTime = 0
+        player?.play()
     }
     
     func loadTracksFromDocuments() -> [LocalTrack] {
@@ -144,6 +165,7 @@ final class PlayerInteractor: PlayerPresenterToInteractorProtocol  {
     }
     
     // MARK: - PlayerPresenterToInteractorProtocol methods for seeking and time retrieval
+    
     func seek(to time: TimeInterval) {
         player?.currentTime = time
     }
@@ -155,4 +177,36 @@ final class PlayerInteractor: PlayerPresenterToInteractorProtocol  {
     func getDuration() -> TimeInterval {
         return player?.duration ?? 1 // Avoid division by zero
     }
+    
+    private func handlePlaybackMode() {
+        switch playbackMode {
+        case .normal:
+            next()
+        case .repeatOne:
+            replayCurrent()
+        case .repeatAll:
+            if currentTrackIndex == tracks.count - 1 {
+                currentTrackIndex = 0
+            } else {
+                currentTrackIndex += 1
+            }
+            let track = tracks[currentTrackIndex]
+            presenter?.didLoad(track: track)
+            preparePlayer(for: track)
+            player?.play()
+        case .shuffle:
+            currentTrackIndex = Int.random(in: 0..<tracks.count)
+            let track = tracks[currentTrackIndex]
+            presenter?.didLoad(track: track)
+            preparePlayer(for: track)
+            player?.play()
+        }
+    }
 }
+
+extension PlayerInteractor: AVAudioPlayerDelegate {
+    func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool) {
+        handlePlaybackMode()
+    }
+}
+

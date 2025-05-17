@@ -6,3 +6,10 @@
 //
 
 import Foundation
+
+enum PlaybackMode: CaseIterable {
+    case normal          // По очереди
+    case repeatOne       // Повтор одного
+    case repeatAll       // Повтор всех
+    case shuffle         // Перемешать
+}
