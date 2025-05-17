@@ -16,12 +16,14 @@ protocol PlayerViewToPresenterProtocol: AnyObject {
     func didTapPause()
     func didTapNext()
     func didTapPrevious()
+    func seekTo(position: TimeInterval)
+    func getPlaybackProgress() -> (currentTime: TimeInterval, duration: TimeInterval)
 }
 
 // MARK: - Presenter to View
 
 protocol PlayerPresenterToViewProtocol: AnyObject {
-    func showTrack(title: String, artist: String, coverImageName: String)
+    func showTrack(title: String, artist: String, artwork: UIImage?)
     func updatePlayButton(isPlaying: Bool)
 }
 
@@ -33,12 +35,15 @@ protocol PlayerPresenterToInteractorProtocol: AnyObject {
     func pause()
     func next()
     func previous()
+    func seek(to time: TimeInterval)
+    func getCurrentTime() -> TimeInterval
+    func getDuration() -> TimeInterval
 }
 
 // MARK: - Interactor to Presenter
 
 protocol PlayerInteractorToPresenterProtocol: AnyObject {
-    func didLoad(track: Track)
+    func didLoad(track: LocalTrack)
     func didChangePlaybackState(isPlaying: Bool)
 }
 
