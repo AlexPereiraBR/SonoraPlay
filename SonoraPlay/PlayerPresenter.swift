@@ -9,9 +9,13 @@ import Foundation
 
 final class PlayerPresenter: PlayerViewToPresenterProtocol {
     
+    // MARK: - Properties
+    
     weak var view: PlayerPresenterToViewProtocol?
     var interactor: PlayerPresenterToInteractorProtocol?
     var router: PlayerPresenterToRouterProtocol?
+    
+    // MARK: - View to Presenter
     
     func viewDidLoad() {
         interactor?.loadInitialTrack()
@@ -32,11 +36,19 @@ final class PlayerPresenter: PlayerViewToPresenterProtocol {
     func didTapPrevious() {
         interactor?.previous()
     }
-
+    
+    func didTapCyclePlaybackMode() {
+        interactor?.cyclePlaybackMode()
+    }
+    
     func seekTo(position: TimeInterval) {
         interactor?.seek(to: position)
     }
-
+    
+    func setVolume(_ value: Float) {
+        interactor?.setVolume(value)
+    }
+    
     func getPlaybackProgress() -> (currentTime: TimeInterval, duration: TimeInterval) {
         let current = interactor?.getCurrentTime() ?? 0
         let duration = interactor?.getDuration() ?? 1
@@ -44,7 +56,7 @@ final class PlayerPresenter: PlayerViewToPresenterProtocol {
     }
 }
 
-// MARK: - Interactor Output
+// MARK: - Interactor to Presenter
 
 extension PlayerPresenter: PlayerInteractorToPresenterProtocol {
     
@@ -54,5 +66,9 @@ extension PlayerPresenter: PlayerInteractorToPresenterProtocol {
     
     func didChangePlaybackState(isPlaying: Bool) {
         view?.updatePlayButton(isPlaying: isPlaying)
+    }
+    
+    func didChangePlaybackMode(mode: PlaybackMode) {
+        view?.updatePlaybackModeIcon(to: mode)
     }
 }
